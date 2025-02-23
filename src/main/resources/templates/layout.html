@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:replace="~{import :: head}"></th:block>
+	</head>
+	<body>
+		<header th:fragment="header" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+			<div class="navbar-brand col-md-3 col-lg-2 me-0 px-3">Hi, [[${session.userName}]]</div>
+			<div class="navbar-nav">
+				<div class="nav-item text-nowrap">
+					<a class="nav-link px-3" href="/login">Sign out</a>
+				</div>
+			</div>
+		</header>
+		<th:block th:fragment="sidebar">
+			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+				<div class="position-sticky pt-3">
+					<ul class="nav flex-column">
+						<li th:each="menu : ${menus}" class="nav-item">
+							<a class="nav-link link-dark" th:href="${menu.url}">
+								<i th:class="${menu.icon}"></i> [[${menu.name}]]
+							</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</th:block>
+	</body>
+</html>

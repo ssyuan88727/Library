@@ -1,0 +1,7 @@
+table th, table td {
+	white-space: nowrap;
+}
+
+.container-fluid {
+	height: 95vh;
+}

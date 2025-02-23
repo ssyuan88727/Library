@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<th:block th:replace="~{import :: head}"></th:block>
+		<title th:text="${title}"></title>
+	</head>
+	<body>
+		<th:block th:replace="~{layout :: header}"></th:block>
+		<div class="container-fluid">
+			<div class="row h-100">
+				<th:block th:replace="~{layout :: sidebar}"></th:block>
+				
+				<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+					<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+						<h1 class="h2" th:text="${title}"></h1>
+					</div>
+					<h3 th:if="${not hasData}">沒有資料</h3>
+					<div th:if="${hasData}" class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th th:each="column : ${columns}" th:text="${column}"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="row : ${data}">
+									<td>
+										<button class="btn btn-sm btn-secondary text-nowrap" th:attr="onclick=|borrow('${row.isbn}')|">
+											<i class="fa-solid fa-file-export"></i>
+											借閱
+										</button>
+									</td>
+									<td th:text="${row.isbn}"></td>
+									<td th:text="${row.name}"></td>
+									<td th:text="${row.author}"></td>
+									<td th:text="${row.introduction}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</main>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			myTable("table", {
+				columnDefs: [
+					{
+						targets: [0],
+						orderable: false
+					},
+					{
+						targets: [2, 3, 4],
+						createdCell: (td, data) => {
+							if (data.length > 20) {
+								$(td).html(`
+									<span class="text-nowrap">${data.substr(0, 20)}...</span>
+									<span class="${data.length < 100 ? 'text-nowrap' : 'text-wrap'}" style="display:none">${data}</span>
+									<button class="btn btn-sm btn-secondary text-nowrap" onclick="toggleText(this)">展開</button>
+								`);
+							}
+						}
+					}
+				]
+			});
+			
+			const toggleText = (btn) => {
+				$(btn).siblings("span").toggle();
+				console.log($(btn).text());
+				$(btn).text($(btn).text() == "展開" ? "收起" : "展開");
+			}
+			
+			const borrow = (isbn) => {
+				showConfirm("確定要借閱嗎?", async () => {
+					const res = await doHttp("POST", `/book/borrow/${isbn}`, null);
+					if (res.ok) {
+						showSuccess(res.msg, () => {
+							location.reload();
+						});
+					}
+				});
+			}
+		</script>
+	</body>
+</html>
